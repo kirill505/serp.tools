@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<div class="jumbotron">
+  <h1 class="display-4">{{ h1.h1 }}</h1>
+  <p class="lead">Это уникальные инструменты для автоматизации процессов продвижения сайтов. Полезные инструменты для
+    SEO специалистов и интернет-маркетологов: выгрузка ТОП, проверка индексации URL, проверка коммерциализации, парсинг
+    подсветок Яндекса и многое другое.</p>
+  <hr class="my-4">
+  <p>Сервис бесплатный, зарегестрируйтесь, чтобы получить больше лимитов!</p>
+  <a href="{{ url_for('login') }}"><button type="button" class="btn btn-lg btn-primary">Увеличить лимиты</button></a>
+</div>
+<div class="card-deck mb-3 text-center">
+  {% for service in services%}
+  <div class="card mb-4 shadow-sm">
+    <h4 class="card-header">{{ service.title }}</h4>
+    <div class="card-body">
+      <p class="card-text">{{ service.description }}</p>
+      <button type="button" class="btn btn-block btn-botton btn-outline-primary"><a href="/top10">Подробнее</a></button>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

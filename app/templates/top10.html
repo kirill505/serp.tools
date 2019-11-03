@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="main-container">
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="col-md-12">
+        <br>
+        <div class="main_table">
+          <ol style="margin-top:20px;" class="breadcrumb">
+            <li><a href="/">Главная</a></li>
+            <li><a href="/tools/">Инструменты</a></li>
+            <li class="active"></li>
+          </ol>
+          <div class="page-header" style="text-align:center;">
+            <h1>Выгрузка ТОП-10 сайтов по запросу в Яндекс и Google</h1>
+
+            <div class="form-group">
+              <p>С помощью этого инструмента можно быстро выгрузить топ-10 сайтов по заданным запросам, посмотреть
+                визуально пересечения документов и доменов по запросам. Инструмент работает с поисковыми системами
+                Яндекс и Google.</p>
+              <p>
+                <div class="alert alert-info" role="alert">
+                  <noindex>
+                    <p>ALARM! Бесплатное увеличение лимитов за счет делегирования XML лимитов - <a
+                        href="/tools/blog/delegirovanie-xml-limitov/" target="_blank">подробности в БЛОГЕ</a>.</p>
+                  </noindex>
+                </div>
+              </p>
+            </div>
+          </div>
+
+          <input type="hidden" name="_token" value="LEFF5lYnP0Uh0P6KsqA093HEtB2mzQGvmypqhFpU">
+          <input type="hidden" name="yes" value="1">
+          <div class="fields filter_center clearfix" style="margin: 0 auto;">
+            <div class="form-group clearfix">
+              <p class="zagolovok-tools">Ключевые слова (максимум 50 ключевых фраз):</p>
+              <div class="col-sm-12" style="padding-left:0px;">
+                {{ form.keys(class="form-control", placeholder="Каждая ключевая фраза с новой строки.", rows="8", wrap="soft") }}
+              </div>
+            </div>
+            <div class="form-group clearfix">
+              <p class="zagolovok-tools">Выберите поисковую систему:</p>
+              <div class="col-sm-12" style="padding-left:0px;">
+                <select class="form-control input-sm js-example-basic-single" name="ss" id="ss">
+                  <option value="1">Яндекс</option>
+                </select>
+                <br /><b>Проверка и выгрузка в Google возможна на подписке <a href="/tools/tariffs/all/"
+                    target="_blank">«Basic»</a> и выше.</b>
+              </div>
+            </div>
+            <div class="form-group clearfix" id="select-yandex-wrapper">
+              <p class="zagolovok-tools">Регион Яндекс:</p>
+              <div class="col-sm-12" style="padding-left:0px;">
+                <select id="select-yandex" class="input-sm js-states" name="city">
+                  <option style="padding: 3px;" value="213">Москва</option>
+                  <option style="padding: 3px;" value="2">Санкт-Петербург</option>
+                  <option style="padding: 3px;" value="1000008">Denver</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group clearfix" id="select-google-wrapper" style="display: none">
+              <p class="zagolovok-tools">Регион Google:</p>
+              <div class="col-sm-12" style="padding-left:0px;">
+                <select id="select-google" class="input-sm js-states" name="city-google">
+                  <option style="padding: 3px;" value="1011969">Москва,Москва,Россия</option>
+                  <option style="padding: 3px;" value="1012040">Санкт-Петербург,Санкт-Петербург,Россия</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group clearfix">
+              <p class="zagolovok-tools">Глубина проверки:</p>
+              <label class="btn btn-default btn-xs" style="padding-left:10px;">
+                <input type="radio" name="depth" id="optionsRadios1" value="10" checked>
+                Топ-10
+              </label>
+              <label class="btn btn-default btn-xs">
+                <input type="radio" name="depth" id="optionsRadios1" value="20">
+                Топ-20
+              </label>
+              <label class="btn btn-default btn-xs">
+                <input type="radio" name="depth" id="optionsRadios1" value="30">
+                Топ-30
+              </label>
+              <label class="btn btn-default btn-xs">
+                <input type="radio" name="depth" id="optionsRadios1" value="50">
+                Топ-50
+              </label>
+              <label class="btn btn-default btn-xs">
+                <input type="radio" name="depth" id="optionsRadios1" value="100">
+                Топ-100
+              </label>
+            </div>
+            <br />
+            <div class="text-center">
+              {{ form.hidden_tag() }}
+              {{ form.ok(class="btn btn-success")}}
+            </div>
+            <div class="res" style="width:auto; clear: both; display:block"></div>
+          </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $('#ok').click(function () {
+    $('#container').html('<h3 align=center>Постановка задачи...</h3>')
+    $.ajax({
+      url: "/top10/res",
+      type: "POST",
+      data: {
+        keys: $('textarea[name="keys"]').val(),
+        city: $('select[name="city"]').val(),
+        citygoogle: $('select[name="city-google"]').val(),
+        depth: $("input[name='depth']:checked").val(),
+        ss: $('select[name="ss"]').val(),
+      },
+      dataType: "html",
+      beforeSend: function () {
+
+      },
+      success: function (response) {
+        var my_object = $.parseJSON(response);
+        console.log(my_object)
+        let obj = JSON.parse(response);
+
+        for (key in obj) {
+          constructTable(key, obj[key])
+        }
+        function constructTable(tablename, spisok) {
+
+          res = document.getElementsByClassName("res");
+
+          var table = $('<table/ class="table" style="width:280px;float:left;">');
+          $(res).append(table);
+          var thead = $('<thead/><tr/><th>#</th><th>' + tablename + '</th>');
+          $(table).append(thead);
+
+          for (var i = 0; i < spisok.length; i++) {
+            row = $('<tr/>');
+            val = '<a href=' + JSON.stringify(spisok[i]) + '>' + (spisok[i]) + '</a>' + '<br>';
+
+            if (val == null) val = "";
+            row.append($('<td/ style="background-color:#FFFFFF;">').html(i + 1));
+            row.append($('<td/ style="background-color:#FFFFFF;">').html(val));
+
+            $(table).append(row);
+          }
+        }
+      },
+      error: function (x, t, e) {
+        alert('Что-то пошло не так!' + x);
+        console.log(error);
+        if (t === 'timeout') {
+
+        } else {
+          alert('Ошибка: ' + e + t + x);
+        }
+      },
+      timeout: 600000
+    });
+
+  });
+</script>
+{% endblock %}
