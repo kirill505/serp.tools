@@ -109,7 +109,7 @@
   $('#ok').click(function () {
     $('#container').html('<h3 align=center>Постановка задачи...</h3>')
     $.ajax({
-      url: "/top10/res",
+      url: "/top10/res2",
       type: "POST",
       data: {
         keys: $('textarea[name="keys"]').val(),
@@ -118,38 +118,13 @@
         depth: $("input[name='depth']:checked").val(),
         ss: $('select[name="ss"]').val(),
       },
-      dataType: "html",
+      dataType: "json",
       beforeSend: function () {
-
       },
       success: function (response) {
         var my_object = $.parseJSON(response);
         console.log(my_object)
-        let obj = JSON.parse(response);
-
-        for (key in obj) {
-          constructTable(key, obj[key])
-        }
-        function constructTable(tablename, spisok) {
-
-          res = document.getElementsByClassName("res");
-
-          var table = $('<table/ class="table" style="width:280px;float:left;">');
-          $(res).append(table);
-          var thead = $('<thead/><tr/><th>#</th><th>' + tablename + '</th>');
-          $(table).append(thead);
-
-          for (var i = 0; i < spisok.length; i++) {
-            row = $('<tr/>');
-            val = '<a href=' + JSON.stringify(spisok[i]) + '>' + (spisok[i]) + '</a>' + '<br>';
-
-            if (val == null) val = "";
-            row.append($('<td/ style="background-color:#FFFFFF;">').html(i + 1));
-            row.append($('<td/ style="background-color:#FFFFFF;">').html(val));
-
-            $(table).append(row);
-          }
-        }
+        
       },
       error: function (x, t, e) {
         alert('Что-то пошло не так!' + x);

@@ -57,6 +57,23 @@ def top_10_res():
     return jsonify(pos)
     #return render_template('top10.html',jsonify(data=pos))
 
+@app.route('/top10/res2', methods=['POST', 'GET'])
+def top_10_res2():
+    response_object = {'status': 'success'}
+    if request.method == 'POST':
+        post_data = request.data
+        #post_data = requests
+        #response_object['keys'] = post_data.get('keys')
+        #response_object['city'] = post_data.get('city')
+        #response_object['citygoogle'] = post_data.get('citygoogle')
+        #response_object['depth'] = post_data.get('depth')
+        #response_object['ss'] = post_data.get('ss')
+        #response_object['message'] = 'Book added!'
+        print(post_data)
+        #else:
+        #   response_object['books'] = BOOKS
+    return jsonify(response_object)
+
 @app.route('/signUpUser', methods=['POST'])
 def signUpUser():
     user =  request.form['username']
