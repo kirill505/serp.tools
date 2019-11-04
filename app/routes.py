@@ -1,7 +1,7 @@
 from app import app
 from flask import render_template, flash, redirect, url_for, request, jsonify
 from app.forms import LoginForm, Top10Form, RegistrationForm
-from app.models import User, Books
+from app.models import User
 import uuid
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
@@ -59,10 +59,10 @@ def top_10_res():
 
 @app.route('/signUpUser', methods=['POST'])
 def signUpUser():
-    user =  request.form['username'];
-    password = request.form['password'];
+    user =  request.form['username']
+    password = request.form['password']
     text = request.form['textik']
-    return jsonify({'status':'OK','user':user,'pass':password,'text':text});
+    return jsonify({'status':'OK','user':user,'pass':password,'text':text})
 
 def count_and_save_words(url):
 

@@ -1,5 +1,6 @@
 alembic==1.2.1
 beautifulsoup4==4.8.1
+Bootstrap-Flask==1.1.0
 bs4==0.0.1
 certifi==2019.9.11
 chardet==3.0.4
