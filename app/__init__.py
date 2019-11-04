@@ -2,22 +2,22 @@ from flask import Flask
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_cors import CORS
+#from flask_cors import CORS
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 import os
 import logging
 from logging.handlers import SMTPHandler
 from logging.handlers import RotatingFileHandler
-from rq import Queue
-from rq.job import Job
+#from rq import Queue
+#from rq.job import Job
 #from worker import conn
 
 app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-CORS(app)
+#CORS(app)
 #bootstrap = Bootstrap(app)
 login = LoginManager(app)
 login.login_view = 'login'
@@ -50,8 +50,5 @@ if not app.debug:
             credentials=auth, secure=secure)
         mail_handler.setLevel(logging.ERROR)
         app.logger.addHandler(mail_handler)
-
-    
-
 
 from app import routes, models, errors

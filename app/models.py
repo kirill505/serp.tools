@@ -59,27 +59,6 @@ class Post(db.Model):
     def __repr__(self):
         return'<Post {}>'.format(self.body)
 
-class Books():
-    BOOKS = [
-    {
-        'title': 'On the Road',
-        'author': 'Jack Kerouac',
-        'read': True
-    },
-    {
-        'title': 'Harry Potter and the Philosopher\'s Stone',
-        'author': 'J. K. Rowling',
-        'read': False
-    },
-    {
-        'title': 'Green Eggs and Ham',
-        'author': 'Dr. Seuss',
-        'read': True
-    }
-    ]
-    def __repr__(self):
-        return self.BOOKS
-
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
