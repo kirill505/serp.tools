@@ -17,6 +17,7 @@ from collections import Counter
 from bs4 import BeautifulSoup
 from .backlights import go_go
 import json
+from werkzeug.datastructures import CombinedMultiDict, MultiDict
 
 @app.route('/', methods=['GET', 'POST'])
 #@app.route('/index', methods=['GET', 'POST'])
@@ -50,12 +51,36 @@ def top10():
 @app.route('/top10/res', methods=['POST', 'GET'])
 def top_10_res():
     #form = Top10Form()
+    response_object = {'status': 'success'}
     if request.method == "POST":
+        post_data = request.values.to_dict()
+        
+        response_object['keys'] = post_data['keys'].split('\n')
+        response_object['city'] = post_data['city']
+        response_object['citygoogle'] = post_data['citygoogle']
+        response_object['depth'] = int(post_data['depth'])
+        response_object['ss'] = post_data['ss']
+
+        print(response_object)
         list_of_key = request.form['keys'].split('\n')
-        pos = go_go(list_of_key)
-    #return jsonify(data = {'query': list_of_key})
+        pos = go_go(response_object)
+
     return jsonify(pos)
     #return render_template('top10.html',jsonify(data=pos))
+
+@app.route('/top10/res2', methods=['POST', 'GET'])
+def top_10_res2():
+    response_object = {'status': 'success'}
+    if request.method == 'POST':
+        post_data = request.get_json()
+        print (request.args) #500 ответ, has no attribute 'arg'
+        #post_data = request.values.to_dict(flat=False)
+        #print(post_data)
+        #print (request.values) #400 ответ, CombinedMultiDict
+        #print (request.json)  #400 ответ, NONE
+        #print (request.get_json(force=True)) #400 ответ, пусто
+        #print (request.form) #200 ответ, null
+    return jsonify(response_object)
 
 @app.route('/signUpUser', methods=['POST'])
 def signUpUser():
