@@ -62,7 +62,7 @@ class ya_search:
         except:
             return 0, 'Нет в топ 100'
 
-def go_go(query_lst):
+def go_go(response_object):
 
 #    test = ya_search()
 #    res = test.parse("https://www.eskimoscow.ru/")
@@ -77,9 +77,9 @@ def go_go(query_lst):
 #    cur = con.cursor()
     res2 = dict()
 #    curr_data = time.strftime('%x')
-    for i in query_lst:
+    for i in response_object['keys']:
         test = ya_search(i)
-        res2[i] = test.urls(10)
+        res2[i] = test.urls(response_object['depth'])
 #        res = test.parse(domain)
 #        print(res)
 #        res2.append((project, domain, i, res[0], res[1], curr_data))
