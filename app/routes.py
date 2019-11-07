@@ -1,4 +1,4 @@
-from app import app
+from app import app, celery
 from flask import render_template, flash, redirect, url_for, request, jsonify
 from app.forms import LoginForm, Top10Form, RegistrationForm
 from app.models import User
@@ -42,12 +42,14 @@ def index():
     return render_template('index.html', title=title, h1=h1, services=services)
 
 #('/top10/', methods=['GET', 'POST'])
+@celery.task
 @app.route('/top10/')
 def top10():
     form = Top10Form()
-   
-    return render_template('top10.html',form=form)
 
+    return render_template('top10.html')
+
+@celery.task
 @app.route('/top10/res', methods=['POST', 'GET'])
 def top_10_res():
     #form = Top10Form()
@@ -73,13 +75,14 @@ def top_10_res2():
     response_object = {'status': 'success'}
     if request.method == 'POST':
         post_data = request.get_json()
-        print (request.args) #500 ответ, has no attribute 'arg'
+        #print (request.args) #500 ответ, has no attribute 'arg'
         #post_data = request.values.to_dict(flat=False)
-        #print(post_data)
-        #print (request.values) #400 ответ, CombinedMultiDict
+        
+        print (request.values) #400 ответ, CombinedMultiDict
         #print (request.json)  #400 ответ, NONE
         #print (request.get_json(force=True)) #400 ответ, пусто
-        #print (request.form) #200 ответ, null
+        print (request.form) #200 ответ, null
+        #print(post_data)
     return jsonify(response_object)
 
 @app.route('/signUpUser', methods=['POST'])
