@@ -12,6 +12,7 @@ from logging.handlers import RotatingFileHandler
 #from rq import Queue
 #from rq.job import Job
 #from worker import conn
+from celery import Celery
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -22,6 +23,10 @@ migrate = Migrate(app, db)
 login = LoginManager(app)
 login.login_view = 'login'
 #q = Queue(connection=conn)
+
+# Initialize Celery
+celery = Celery('Hello', broker=app.config['CELERY_BROKER_URL'])
+celery.conf.update(app.config)
 
 if not app.debug:
     if not os.path.exists('logs'):

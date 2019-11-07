@@ -36,7 +36,7 @@
             <div class="form-group clearfix">
               <p class="zagolovok-tools">Ключевые слова (максимум 50 ключевых фраз):</p>
               <div class="col-sm-12" style="padding-left:0px;">
-                {{ form.keys(class="form-control", placeholder="Каждая ключевая фраза с новой строки.", rows="8", wrap="soft") }}
+                <textarea name="keys"   required  class="form-control" placeholder="Каждая ключевая фраза с новой строки." rows="8" wrap="soft"></textarea>
               </div>
             </div>
             <div class="form-group clearfix">
@@ -93,8 +93,7 @@
             </div>
             <br />
             <div class="text-center">
-              {{ form.hidden_tag() }}
-              {{ form.ok(class="btn btn-success")}}
+              <button type="submit" id="ok" class="btn btn-success">Начать проверку....</button>
             </div>
             <div class="res" style="width:auto; clear: both; display:block"></div>
           </div>
