@@ -15,10 +15,11 @@ import operator
 import re
 from collections import Counter
 from bs4 import BeautifulSoup
-from .backlights import go_go
 import json
 from werkzeug.datastructures import CombinedMultiDict, MultiDict
-
+import random
+import time
+from .backlights import ya_search_xmlriver
 @app.route('/', methods=['GET', 'POST'])
 #@app.route('/index', methods=['GET', 'POST'])
 #@login_required
@@ -42,33 +43,103 @@ def index():
     return render_template('index.html', title=title, h1=h1, services=services)
 
 #('/top10/', methods=['GET', 'POST'])
-@celery.task
+#@celery.task
 @app.route('/top10/')
 def top10():
-    form = Top10Form()
-
+    add.delay(3, 4)
+    #top_10_res.apply_async([4])
+    
     return render_template('top10.html')
 
-@celery.task
+#@celery.task(bind=True)
 @app.route('/top10/res', methods=['POST', 'GET'])
 def top_10_res():
-    #form = Top10Form()
-    response_object = {'status': 'success'}
+    
+    response_object = dict()
     if request.method == "POST":
-        post_data = request.values.to_dict()
         
+        post_data = request.values.to_dict()
+
+        #эти данные передаем XMLRiver
         response_object['keys'] = post_data['keys'].split('\n')
-        response_object['city'] = post_data['city']
-        response_object['citygoogle'] = post_data['citygoogle']
-        response_object['depth'] = int(post_data['depth'])
-        response_object['ss'] = post_data['ss']
+        response_object['loc'] = post_data['loc']
+        response_object['groupby'] = int(post_data['groupby'])
+        response_object['lr'] = post_data['lr']
+        response_object['domain'] = post_data['domain']
+        response_object['country'] = post_data['country']
+        response_object['device'] = post_data['device']
+        
+        #тут нужно вызвать отложенный запрос к XMLRiver
+        #id запроса к XMLRiver, TRUE или ошибку
+        res2 = dict()
+        for i in response_object['keys']:
+            test = ya_search_xmlriver(i, response_object['loc'], response_object['groupby'], response_object['lr'], response_object['domain'], response_object['country'], response_object['device'])
+            res2[i] = test.urls(response_object['groupby'])
+        print(res2)
+        #в аргументе передаем id заказа
+        task = long_task.apply_async()        
 
-        print(response_object)
-        list_of_key = request.form['keys'].split('\n')
-        pos = go_go(response_object)
+    return jsonify(res2, {}, 202, {'Location': url_for('taskstatus', task_id=task.id)})
 
-    return jsonify(pos)
-    #return render_template('top10.html',jsonify(data=pos))
+@celery.task(bind=True)
+def long_task(self):
+    """Background task that runs a long function with progress reports."""
+    
+    #удалить эту "красоту", вместо нее цикл while пока не получен успешный ответ от XMLRiver, 
+    #через каждые 5 сек. делаем запрос к XMLRiver, получаем ответ
+    #результаты ответа отправляем POST запросом к таске //status/a3df0d9b-c095-4491-949d-d8b49bf1d925
+    #пример task = my_background_task.apply_async(args=[10, 20], countdown=60)
+
+    verb = ['Starting up', 'Booting', 'Repairing', 'Loading', 'Checking']
+    adjective = ['master', 'radiant', 'silent', 'harmonic', 'fast']
+    noun = ['solar array', 'particle reshaper', 'cosmic ray', 'orbiter', 'bit']
+    message = ''
+    total = random.randint(10, 50)
+    for i in range(total):
+        if not message or random.random() < 0.25:
+            message = '{0} {1} {2}...'.format(random.choice(verb),
+                                              random.choice(adjective),
+                                              random.choice(noun))
+        self.update_state(state='PROGRESS',
+                          meta={'current': i, 'total': total,
+                                'status': message})
+        time.sleep(1)
+    return {'current': 100, 'total': 100, 'status': 'Task completed!',
+            'result': 42}
+
+#к ответу нужно добавить id отложенного запроса к XMLRiver
+@app.route('/status/<task_id>')
+def taskstatus(task_id):
+    task = long_task.AsyncResult(task_id)
+    if task.state == 'PENDING':
+        response = {
+            'state': task.state,
+            'current': 0,
+            'total': 1,
+            'status': 'Pending...'
+        }
+    elif task.state != 'FAILURE':
+        response = {
+            'state': task.state,
+            'current': task.info.get('current', 0),
+            'total': task.info.get('total', 1),
+            'status': task.info.get('status', '')
+        }
+        if 'result' in task.info:
+            response['result'] = task.info['result']
+    else:
+        # something went wrong in the background job
+        response = {
+            'state': task.state,
+            'current': 1,
+            'total': 1,
+            'status': str(task.info),  # this is the exception raised
+        }
+    return jsonify(response)
+
+@celery.task
+def add(x, y):
+    return x + y
 
 @app.route('/top10/res2', methods=['POST', 'GET'])
 def top_10_res2():
