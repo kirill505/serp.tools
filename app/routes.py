@@ -20,6 +20,7 @@ from werkzeug.datastructures import CombinedMultiDict, MultiDict
 import random
 import time
 from .backlights import ya_search_xmlriver
+
 @app.route('/', methods=['GET', 'POST'])
 #@app.route('/index', methods=['GET', 'POST'])
 #@login_required
@@ -43,15 +44,12 @@ def index():
     return render_template('index.html', title=title, h1=h1, services=services)
 
 #('/top10/', methods=['GET', 'POST'])
-#@celery.task
 @app.route('/top10/')
 def top10():
-    #add.delay(3, 4)
-    #top_10_res.apply_async([4])
+    add.delay(3, 4)
     
     return render_template('top10.html')
 
-#@celery.task(bind=True)
 @app.route('/top10/res', methods=['POST', 'GET'])
 def top_10_res():
     
@@ -77,11 +75,11 @@ def top_10_res():
             res2[i] = test.urls(response_object['groupby'])
         print(res2)
         #в аргументе передаем id заказа
-    #    task = long_task.apply_async()        
+        task = long_task.apply_async()        
 
     return jsonify(res2, {}, 202, {'Location': url_for('taskstatus', task_id=task.id)})
 
-#@celery.task(bind=True)
+@celery.task(bind=True)
 def long_task(self):
     """Background task that runs a long function with progress reports."""
     
@@ -110,7 +108,7 @@ def long_task(self):
 #к ответу нужно добавить id отложенного запроса к XMLRiver
 @app.route('/status/<task_id>')
 def taskstatus(task_id):
-    #task = long_task.AsyncResult(task_id)
+    task = long_task.AsyncResult(task_id)
     if task.state == 'PENDING':
         response = {
             'state': task.state,
@@ -137,7 +135,7 @@ def taskstatus(task_id):
         }
     return jsonify(response)
 
-#@celery.task
+@celery.task
 def add(x, y):
     return x + y
 
