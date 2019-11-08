@@ -27,7 +27,7 @@ Mako==1.1.0
 MarkupSafe==1.1.1
 more-itertools==7.2.0
 nltk==3.4.5
-pkg-resources==0.0.0
+pkg-resources
 psycopg2==2.8.4
 python-dateutil==2.8.0
 python-dotenv==0.10.3
