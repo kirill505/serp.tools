@@ -81,7 +81,7 @@ def top_10_res():
 
     return jsonify(res2, {}, 202, {'Location': url_for('taskstatus', task_id=task.id)})
 
-@celery.task(bind=True)
+#@celery.task(bind=True)
 def long_task(self):
     """Background task that runs a long function with progress reports."""
     
@@ -137,7 +137,7 @@ def taskstatus(task_id):
         }
     return jsonify(response)
 
-@celery.task
+#@celery.task
 def add(x, y):
     return x + y
 
