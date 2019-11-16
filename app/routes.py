@@ -2,14 +2,14 @@ from app import app, celery
 from flask import render_template, flash, redirect, url_for, request, jsonify
 from app.forms import LoginForm, Top10Form, RegistrationForm
 from app.models import User
-import uuid
+#import uuid
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 from app import db
 from datetime import datetime
 from app.forms import EditProfileForm
-import nltk
-import os
+#import nltk
+#import os
 import requests
 import operator
 import re
@@ -20,6 +20,8 @@ from werkzeug.datastructures import CombinedMultiDict, MultiDict
 import random
 import time
 from .backlights import ya_search_xmlriver
+from lxml import html
+from .xmlriver import *
 
 @app.route('/', methods=['GET', 'POST'])
 #@app.route('/index', methods=['GET', 'POST'])
@@ -46,38 +48,52 @@ def index():
 #('/top10/', methods=['GET', 'POST'])
 @app.route('/top10/')
 def top10():
-    add.delay(3, 4)
     
     return render_template('top10.html')
 
 @app.route('/top10/res', methods=['POST', 'GET'])
 def top_10_res():
-    
+
     response_object = dict()
     if request.method == "POST":
         
         post_data = request.values.to_dict()
 
         #эти данные передаем XMLRiver
-        response_object['keys'] = post_data['keys'].split('\n')
-        response_object['loc'] = post_data['loc']
-        response_object['groupby'] = int(post_data['groupby'])
-        response_object['lr'] = post_data['lr']
-        response_object['domain'] = post_data['domain']
-        response_object['country'] = post_data['country']
-        response_object['device'] = post_data['device']
+    
         
         #тут нужно вызвать отложенный запрос к XMLRiver
         #id запроса к XMLRiver, TRUE или ошибку
         res2 = dict()
-        for i in response_object['keys']:
-            test = ya_search_xmlriver(i, response_object['loc'], response_object['groupby'], response_object['lr'], response_object['domain'], response_object['country'], response_object['device'])
-            res2[i] = test.urls(response_object['groupby'])
+        base_url = 'http://xmlriver.com/search/xml?user=798&key=c17a38a762f9f72d80d12489ee7b5d4b35dd2aff'
+        for i in post_data['keys'].split('\n'):
+            res2[i] = get_urls_in_xmlriver(base_url,
+                query = i, 
+                loc = post_data['loc'], 
+                groupby = int(post_data['groupby']), 
+                lr = post_data['lr'],
+                domain = post_data['domain'],
+                country = post_data['country'], 
+                device = post_data['device'])
+            #if resp[0] == "SUCCESS":
+                #task = long_task.apply_async()
+            #res2[i] = get_urls_in_xmlriver(resp[1])
+
         print(res2)
         #в аргументе передаем id заказа
-        task = long_task.apply_async()        
 
-    return jsonify(res2, {}, 202, {'Location': url_for('taskstatus', task_id=task.id)})
+    return jsonify(res2)
+    #, {}, 202, {'Location': url_for('taskstatus', task_id=task.id)})
+
+#тут надо добавить ф-ию получения id таски XMLRiver
+def top10_task_id():
+    
+    return True
+
+#ф-ия парсинга XML-ки 
+def get_xml_data():
+    
+    return
 
 @celery.task(bind=True)
 def long_task(self):
@@ -88,21 +104,13 @@ def long_task(self):
     #результаты ответа отправляем POST запросом к таске //status/a3df0d9b-c095-4491-949d-d8b49bf1d925
     #пример task = my_background_task.apply_async(args=[10, 20], countdown=60)
 
-    verb = ['Starting up', 'Booting', 'Repairing', 'Loading', 'Checking']
-    adjective = ['master', 'radiant', 'silent', 'harmonic', 'fast']
-    noun = ['solar array', 'particle reshaper', 'cosmic ray', 'orbiter', 'bit']
-    message = ''
-    total = random.randint(10, 50)
-    for i in range(total):
-        if not message or random.random() < 0.25:
-            message = '{0} {1} {2}...'.format(random.choice(verb),
-                                              random.choice(adjective),
-                                              random.choice(noun))
+    task_done = False
+    while not task_done:
         self.update_state(state='PROGRESS',
-                          meta={'current': i, 'total': total,
+                          meta={'id_task': 0,
                                 'status': message})
         time.sleep(1)
-    return {'current': 100, 'total': 100, 'status': 'Task completed!',
+    return {'id_task': id, 'status': 'Task completed!',
             'result': 42}
 
 #к ответу нужно добавить id отложенного запроса к XMLRiver
@@ -112,15 +120,13 @@ def taskstatus(task_id):
     if task.state == 'PENDING':
         response = {
             'state': task.state,
-            'current': 0,
-            'total': 1,
+            'id_task': 0,
             'status': 'Pending...'
         }
     elif task.state != 'FAILURE':
         response = {
             'state': task.state,
-            'current': task.info.get('current', 0),
-            'total': task.info.get('total', 1),
+            'id_task': task.info.get('id_task', 0),
             'status': task.info.get('status', '')
         }
         if 'result' in task.info:
@@ -129,15 +135,10 @@ def taskstatus(task_id):
         # something went wrong in the background job
         response = {
             'state': task.state,
-            'current': 1,
-            'total': 1,
+            'id_task': 1,
             'status': str(task.info),  # this is the exception raised
         }
     return jsonify(response)
-
-@celery.task
-def add(x, y):
-    return x + y
 
 @app.route('/top10/res2', methods=['POST', 'GET'])
 def top_10_res2():
@@ -160,99 +161,6 @@ def signUpUser():
     password = request.form['password']
     text = request.form['textik']
     return jsonify({'status':'OK','user':user,'pass':password,'text':text})
-
-def count_and_save_words(url):
-
-    errors = []
-
-    try:
-        r = requests.get(url)
-    except:
-        errors.append(
-            "Unable to get URL. Please make sure it's valid and try again."
-        )
-        return {"error": errors}
-
-    # text processing
-    raw = BeautifulSoup(r.text).get_text()
-    nltk.data.path.append('./nltk_data/')  # set the path
-    tokens = nltk.word_tokenize(raw)
-    text = nltk.Text(tokens)
-
-    # remove punctuation, count raw words
-    nonPunct = re.compile('.*[A-Za-z].*')
-    raw_words = [w for w in text if nonPunct.match(w)]
-    raw_word_count = Counter(raw_words)
-
-    # stop words
-    no_stop_words = [w for w in raw_words if w.lower() not in stops]
-    no_stop_words_count = Counter(no_stop_words)
-
-    # save the results
-    try:
-        result = Result(
-            url=url,
-            result_all=raw_word_count,
-            result_no_stop_words=no_stop_words_count
-        )
-
-        db.session.add(result)
-        db.session.commit()
-        return result.id
-    except:
-        errors.append("Unable to add item to database.")
-        return {"error": errors}
-
-stops = [
-    'i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you',
-    'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his',
-    'himself', 'she', 'her', 'hers', 'herself', 'it', 'its', 'itself',
-    'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which',
-    'who', 'whom', 'this', 'that', 'these', 'those', 'am', 'is', 'are',
-    'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having',
-    'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if',
-    'or', 'because', 'as', 'until', 'while', 'of', 'at', 'by', 'for',
-    'with', 'about', 'against', 'between', 'into', 'through', 'during',
-    'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in',
-    'out', 'on', 'off', 'over', 'under', 'again', 'further', 'then',
-    'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'any',
-    'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no',
-    'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 's',
-    't', 'can', 'will', 'just', 'don', 'should', 'now', 'id', 'var',
-    'function', 'js', 'd', 'script', '\'script', 'fjs', 'document', 'r',
-    'b', 'g', 'e', '\'s', 'c', 'f', 'h', 'l', 'k'
-]
-
-@app.route('/freq', methods=['GET', 'POST'])
-def freq():
-    results = {}
-    if request.method == "POST":
-        # get url that the person has entered
-        url = request.form['url']
-        if 'http://' not in url[:7]:
-            url = 'http://' + url
-        job = q.enqueue_call(
-            func=count_and_save_words, args=(url,), result_ttl=5000
-        )
-        print(job.get_id())
-
-    return render_template('freq.html', results=results)
-
-@app.route("/results/<job_key>", methods=['GET'])
-def get_results(job_key):
-
-    job = Job.fetch(job_key, connection=conn)
-
-    if job.is_finished:
-        result = Result.query.filter_by(id=job.result).first()
-        results = sorted(
-            result.result_no_stop_words.items(),
-            key=operator.itemgetter(1),
-            reverse=True
-        )[:10]
-        return jsonify(results)
-    else:
-        return "Nay!", 202
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -304,81 +212,6 @@ def user(username):
 def profile(id):
     user = User()
     return "Hello world {}".format(id)
-
-@app.route('/_add_numbers', methods=['POST'])
-def add_numbers():
-    a = request.args.get('a', 0, type=int)
-    b = request.args.get('b', 0, type=int)
-    return jsonify({'data': render_template('_add_numbers.html', result=a + b)})
-
-#@app.route("/<any(plain, jquery, fetch):js>")
-#def index(js):
- #   return render_template("{0}.html".format(js), js=js)
-
-@app.route('/ping', methods=['GET'])
-def ping_pong():
-     return jsonify('pong!')
-BOOKS = [
-    {
-        'id': uuid.uuid4().hex,
-        'title': 'On the Road',
-        'author': 'Jack Kerouac',
-        'read': True
-    },
-    {
-        'id': uuid.uuid4().hex,
-        'title': 'Harry Potter and the Philosopher\'s Stone',
-        'author': 'J. K. Rowling',
-        'read': False
-    },
-    {
-        'id': uuid.uuid4().hex,
-        'title': 'Green Eggs and Ham',
-        'author': 'Dr. Seuss',
-        'read': True
-    }
-]
-
-@app.route('/books', methods=['GET', 'POST'])
-def all_books():
-    response_object = {'status': 'success'}
-    if request.method == 'POST':
-        post_data = request.get_json()
-        BOOKS.append({
-            'id': uuid.uuid4().hex,
-            'title': post_data.get('title'),
-            'author': post_data.get('author'),
-            'read': post_data.get('read')
-        })
-        response_object['message'] = 'Book added!'
-    else:
-        response_object['books'] = BOOKS
-    return jsonify(response_object)
-
-@app.route('/books/<book_id>', methods=['PUT', 'DELETE'])
-def single_book(book_id):
-    response_object = {'status': 'success'}
-    if request.method == 'PUT':
-        post_data = request.get_json()
-        remove_book(book_id)
-        BOOKS.append({
-            'id': uuid.uuid4().hex,
-            'title': post_data.get('title'),
-            'author': post_data.get('author'),
-            'read': post_data.get('read')
-        })
-        response_object['message'] = 'Book updated!'
-    if request.method == 'DELETE':
-        remove_book(book_id)
-        response_object['message'] = 'Book removed!'
-    return jsonify(response_object)
-
-def remove_book(book_id):
-    for book in BOOKS:
-        if book['id'] == book_id:
-            BOOKS.remove(book)
-            return True
-    return False
 
 @app.before_request
 def before_request():
