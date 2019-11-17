@@ -4,11 +4,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap-4.3.1-dist/css/bootstrap.min.css') }}">
-  <script src="{{ url_for('static', filename='bootstrap-4.3.1-dist/js/bootstrap.min.js') }}" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" type="text/css"
+    href="{{ url_for('static', filename='bootstrap-4.3.1-dist/css/bootstrap.min.css') }}">
+  <script src="{{ url_for('static', filename='bootstrap-4.3.1-dist/js/bootstrap.min.js') }}"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dashboard.css') }}">
   <!--
     
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
@@ -30,63 +34,79 @@
 </head>
 
 <body>
-  <div class="container">
-    <div class="navbar-expand-lg navbar navbar-dark bg-dark bg-primary">
-      <div class="container">
-        <a href="{{ url_for('index') }}" class="navbar-brand">SERP.TOOLS</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
-          aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarResponsive">
-          <ul class="navbar-nav">
+  <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="{{ url_for('index') }}">SERP.TOOLS</a>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row">
+      <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+        <div class="sidebar-sticky">
+          <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+
+            <a class="d-flex align-items-center text-muted" href="{{ url_for('tools') }}">
+              <span data-feather="plus-circle"></span>
+              <span>Инструменты</span>
+            </a>
+          </h6>
+          <ul class="nav flex-column">
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('index') }}">Главная</a>
+              <a class="nav-link" href="{{ url_for('top10') }}">
+                <span data-feather="file"></span>
+                Анализ ТОП-10
+              </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Лемматизация</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('top10') }}">Парсинг ТОП-10</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Контакты</a>
+              <a class="nav-link" href="{{ url_for('tools') }}">
+                <span data-feather="home"></span>
+                Лемматизация (Скоро)
+              </a>
             </li>
           </ul>
-        </div>
-        <ul class="navbar-nav navbar-right nav">
-          {% if current_user.is_anonymous %}
-          <li class="nav-item"><a href="{{ url_for('login') }}" class="nav-link">Вход</a></li>
-          <li class="nav-item"><a href="{{ url_for('register') }}" class="nav-link">Регистрация</a></li>
-          {% else %}
-          <li class="nav-item"><a href="{{ url_for('user', username=current_user.username) }}"
-              class="nav-link">Профиль</a></li>
-          <li class="nav-item"><a href="{{ url_for('logout') }}" class="nav-link">Выход</a></li>
-          {% endif%}
 
+          <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+            <span>Настройки аккаунта</span>
+            <a class="d-flex align-items-center text-muted" href="#">
+              <span data-feather="plus-circle"></span>
+            </a>
+          </h6>
+          <ul class="nav flex-column mb-2">
+            {% if current_user.is_anonymous %}
+            <li class="nav-item"><a href="{{ url_for('login') }}" class="nav-link">Вход</a></li>
+            <li class="nav-item"><a href="{{ url_for('register') }}" class="nav-link">Регистрация</a></li>
+            {% else %}
+            <li class="nav-item"><a href="{{ url_for('user', username=current_user.username) }}"
+                class="nav-link">Профиль</a></li>
+            <li class="nav-item"><a href="{{ url_for('logout') }}" class="nav-link">Выход</a></li>
+            {% endif%}
+          </ul>
+        </div>
+      </nav>
+
+      <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+          {% for message in messages %}
+          <li>{{ message }}</li>
+          {% endfor %}
         </ul>
-      </div>
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+
+        <footer class="pt-4 my-md-5 pt-md-5 border-top">
+          <div class="row">
+            <div class="col-12 col-md">
+              <small class="d-block mb-3 text-muted">&copy; 2019</small>
+            </div>
+          </div>
+        </footer>
+      </main>
     </div>
-
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <ul>
-      {% for message in messages %}
-      <li>{{ message }}</li>
-      {% endfor %}
-    </ul>
-    {% endif %}
-    {% endwith %}
-
-    {% block content %}{% endblock %}
-
-    <footer class="pt-4 my-md-5 pt-md-5 border-top">
-      <div class="row">
-        <div class="col-12 col-md">
-          <small class="d-block mb-3 text-muted">&copy; 2019</small>
-        </div>
-      </div>
-    </footer>
   </div>
 </body>
+
 </html>
