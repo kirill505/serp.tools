@@ -23,7 +23,7 @@ from .backlights import ya_search_xmlriver
 from lxml import html
 from .xmlriver import *
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/ru', methods=['GET', 'POST'])
 #@app.route('/index', methods=['GET', 'POST'])
 #@login_required
 def index():
@@ -31,27 +31,30 @@ def index():
     h1 = {'h1': 'Инструменты для SEO-специалистов'}
     services = [
     {
+        'title': 'Выгрузка ТОП-10',
+        'description': 'Инструмент, который поможет быстро выгрузить топ-10 сайтов по заданным запросам, в поисковой системе Google.',
+        'url': 'ru/top10/'
+    },
+    {
         'title': 'Лемматизация',
-        'description': 'С помощью инструмента можно быстро лемматизировать текст (приводит к именительному падежу единственному числу) и проверять на N-граммы в тексте.'
+        'description': 'С помощью инструмента можно быстро лемматизировать текст (приводит к именительному падежу единственному числу) и проверять на N-граммы в тексте.',
+        'url': '#'
     },
     {
         'title': 'Парсинг подсветок',
-        'description': 'Инструмент, который поможет по запросу спарсить подсветки (выделенные жирным) поисковой системы Google.'
-    },
-    {
-        'title': 'Выгрузка ТОП-10',
-        'description': 'Инструмент, который поможет быстро выгрузить топ-10 сайтов по заданным запросам, в поисковой системе Google.'
+        'description': 'Инструмент, который поможет по запросу спарсить подсветки (выделенные жирным) поисковой системы Google.',
+        'url': '#'
     },
     ]
     return render_template('index.html', title=title, h1=h1, services=services)
 
 #('/top10/', methods=['GET', 'POST'])
-@app.route('/top10/')
+@app.route('/ru/top10/')
 def top10():
     
     return render_template('top10.html')
 
-@app.route('/top10/res', methods=['POST', 'GET'])
+@app.route('/ru/top10/res', methods=['POST', 'GET'])
 def top_10_res():
 
     response_object = dict()
@@ -114,7 +117,7 @@ def long_task(self):
             'result': 42}
 
 #к ответу нужно добавить id отложенного запроса к XMLRiver
-@app.route('/status/<task_id>')
+@app.route('/ru/status/<task_id>')
 def taskstatus(task_id):
     task = long_task.AsyncResult(task_id)
     if task.state == 'PENDING':
@@ -140,7 +143,7 @@ def taskstatus(task_id):
         }
     return jsonify(response)
 
-@app.route('/top10/res2', methods=['POST', 'GET'])
+@app.route('/ru/top10/res2', methods=['POST', 'GET'])
 def top_10_res2():
     response_object = {'status': 'success'}
     if request.method == 'POST':
@@ -155,14 +158,14 @@ def top_10_res2():
         #print(post_data)
     return jsonify(response_object)
 
-@app.route('/signUpUser', methods=['POST'])
+@app.route('/ru/signUpUser', methods=['POST'])
 def signUpUser():
     user =  request.form['username']
     password = request.form['password']
     text = request.form['textik']
     return jsonify({'status':'OK','user':user,'pass':password,'text':text})
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/ru/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
@@ -179,12 +182,12 @@ def login():
         return redirect(next_page)
     return render_template('login.html', title='Sign In', form=form)
 
-@app.route('/logout')
+@app.route('/ru/logout')
 def logout():
     logout_user()
     return redirect(url_for('index'))
 
-@app.route('/register', methods=['GET', 'POST'])
+@app.route('/ru/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
@@ -198,7 +201,7 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
-@app.route('/user/<username>')
+@app.route('/ru/user/<username>')
 @login_required
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
@@ -208,7 +211,7 @@ def user(username):
     ]
     return render_template('user.html', user=user, posts=posts)
 
-@app.route('/profile/<int:id>')
+@app.route('/ru/profile/<int:id>')
 def profile(id):
     user = User()
     return "Hello world {}".format(id)
@@ -219,7 +222,7 @@ def before_request():
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
 
-@app.route('/edit_profile', methods=['GET', 'POST'])
+@app.route('/ru/edit_profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
     form = EditProfileForm(current_user.username)
@@ -234,3 +237,7 @@ def edit_profile():
         form.about_me.data = current_user.about_me
     return render_template('edit_profile.html', title='Edit Profile',
                            form=form)
+                        
+@app.route("/ru/robots.txt")
+def robots_txt():
+    return render_template("robots.txt")

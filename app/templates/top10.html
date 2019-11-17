@@ -8,17 +8,14 @@
         <br>
         <div class="main_table">
           <div class="page-header" style="text-align:center;">
-            <h1>Выгрузка ТОП-10 сайтов по запросу в Яндекс и Google</h1>
+            <h1>Анализ ТОП10 Google</h1>
 
             <div class="form-group">
-              <p>С помощью этого инструмента можно быстро выгрузить топ-10 сайтов по заданным запросам, посмотреть
-                визуально пересечения документов и доменов по запросам. Инструмент работает с поисковыми системами
-                Яндекс и Google.</p>
+              <p>Инструмент позволяет получить быстро получить данные выдачи поисковой системы Google</p>
               <p>
                 <div class="alert alert-info" role="alert">
                   <noindex>
-                    <p>ALARM! Бесплатное увеличение лимитов за счет делегирования XML лимитов - <a
-                        href="/tools/blog/delegirovanie-xml-limitov/" target="_blank">подробности в БЛОГЕ</a>.</p>
+                    <p>Максимум 10 фраз в день для незарегистрированных пользователей, 50 в день - для зарегистрированных, независимо от глобальных лимитов.</p>
                   </noindex>
                 </div>
               </p>
@@ -29,7 +26,7 @@
           <input type="hidden" name="yes" value="1">
           <div class="fields filter_center clearfix" style="margin: 0 auto;">
             <div class="form-group clearfix">
-              <p class="zagolovok-tools">Ключевые слова (максимум 50 ключевых фраз):</p>
+              <p class="zagolovok-tools">Ключевые слова: (осталось 10 из 10 проверок):</p>
               <div class="col-sm-12" style="padding-left:0px;">
                 <textarea name="keys"   required  class="form-control" placeholder="Каждая ключевая фраза с новой строки." rows="8" wrap="soft"></textarea>
               </div>
@@ -40,8 +37,6 @@
                 <select class="form-control input-sm js-example-basic-single" name="ss" id="ss">
                   <option value="1">Google</option>
                 </select>
-                <br /><b>Проверка и выгрузка в Google возможна на подписке <a href="/tools/tariffs/all/"
-                    target="_blank">«Basic»</a> и выше.</b>
               </div>
             </div>
             <div class="form-group clearfix" id="select-yandex-wrapper">
@@ -203,7 +198,7 @@
       //});
 
     $.ajax({
-      url: "/top10/res",
+      url: "/ru/top10/res",
       type: "POST",
       data: {
         keys: $('textarea[name="keys"]').val(),

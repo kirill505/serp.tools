@@ -18,7 +18,7 @@
     <h4 class="card-header">{{ service.title }}</h4>
     <div class="card-body">
       <p class="card-text">{{ service.description }}</p>
-      <button type="button" class="btn btn-block btn-botton btn-outline-primary"><a href="/top10">Подробнее</a></button>
+      <button type="button" class="btn btn-block btn-botton btn-outline-primary"><a href="{{ service.url }}">Подробнее</a></button>
     </div>
   </div>
   {% endfor %}
