@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+  <div class="row">
+    <br>
+    <div class="page-header" style="text-align:center;">
+      <h1>Лемматизация</h1>
+
+      <div class="form-group" style="text-align:center;">
+        <p>С помощью этого инструмента можно быстро лемматизировать текст (приводит к именительному падежу единственному числу)</p>
+       
+      </div>
+    </div>
+
+    <input type="hidden" name="_token" value="LEFF5lYnP0Uh0P6KsqA093HEtB2mzQGvmypqhFpU">
+    <input type="hidden" name="yes" value="1">
+
+    <div class="col-sm-6">
+      <div class="form-group clearfix">
+        <p class="zagolovok-tools">Ваш текст:</p>
+        <div style="padding-left:0px;">
+          <textarea name="text_for_lemma" required class="form-control" placeholder="Ваш текст"
+            rows="20" wrap="soft"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group clearfix">
+        <p class="zagolovok-tools">Выберите опции:</p>
+        <div style="padding-left:0px;">
+          <select class="form-control input-sm js-example-basic-single" name="ss" id="ss">
+            <option value="1">Опция1</option>
+          </select>
+        </div>
+      </div>
+      
+      </div>
+    </div>
+    <br />
+    <div class="col-sm-12" style="text-align:center;">
+      <button type="submit" id="ok" class="btn btn-success">Лемматизировать....
+      </button>
+    </div>
+    <br />
+    <div class="res" style="width:auto; clear: both; display:block"></div>
+    <div id="progress"></div>
+  </div>
+</div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/nanobar/0.2.1/nanobar.min.js"></script>
+<script>
+  $('#ok').click(function () {
+    $('#container').html('<h3 align=center>Постановка задачи...</h3>')
+   
+    spin = $('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+    $('#ok').append(spin);
+    $('.table-res').remove()
+
+    $.ajax({
+      url: "/ru/lemma/res",
+      type: "POST",
+      data: {
+        text_for_lemma: $('textarea[name="text_for_lemma"]').val(),
+      },
+      dataType: "html",
+      beforeSend: function () {
+      },
+      success: function (response) {
+        var my_object = $.parseJSON(response);
+        console.log(my_object)
+        
+        res = document.getElementsByClassName("res");
+        var table = $('<table/ class="table table-res" style="width:280px;float:left;">');
+        $(res).append(table);
+        var thead = $('<thead/><tr/><th>#</th><th>Слово</th><th>Количество повторений</th>');
+        $(table).append(thead);
+
+        for (var i = 0; i < my_object.length; i++) {
+        row = $('<tr/>');
+        val = '<a href=' + JSON.stringify(my_object[i]) + '>' + (my_object[i]) + '</a>' + '<br>';
+        row.append($('<td/ style="background-color:#FFFFFF;">').html(i+1));
+        row.append($('<td/ style="background-color:#FFFFFF;">').html(my_object[i][0]));
+        row.append($('<td/ style="background-color:#FFFFFF;">').html(my_object[i][1]));
+        $(table).append(row);
+        };
+
+        $('.spinner-border').remove()
+      },
+      error: function (x, t, e) {
+        alert('Что-то пошло не так!' + x);
+        console.log(error);
+        $('.spinner-border').remove()
+        if (t === 'timeout') {
+
+        } else {
+          alert('Ошибка: ' + e + t + x);
+        }
+      },
+      timeout: 600000
+    });
+
+  });
+</script>
+
+{% endblock %}

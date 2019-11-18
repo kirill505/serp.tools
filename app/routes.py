@@ -22,6 +22,7 @@ import time
 from .backlights import ya_search_xmlriver
 from lxml import html
 from .xmlriver import *
+from .lemma import get_lemma_dict
 
 @app.route('/ru', methods=['GET', 'POST'])
 #@app.route('/index', methods=['GET', 'POST'])
@@ -39,8 +40,8 @@ def index():
     {
         'title': 'Лемматизация',
         'description': 'С помощью инструмента можно быстро лемматизировать текст (приводит к именительному падежу единственному числу) и проверять на N-граммы в тексте.',
-        'url': '#',
-        'anchor': 'Скоро'
+        'url': 'ru/lemma/',
+        'anchor': 'Подробнее'
     },
     {
         'title': 'Парсинг подсветок',
@@ -57,6 +58,24 @@ def top10():
     
     return render_template('top10.html')
 
+@app.route('/ru/lemma/')
+def lemma():
+    
+    return render_template('lemma.html')
+
+@app.route('/ru/lemma/res', methods=['POST', 'GET'])
+def lemma_res():
+    response_object = dict()
+    if request.method == "POST":        
+        post_data = request.values.to_dict()
+
+        text = post_data['text_for_lemma']
+
+        res = get_lemma_dict(text)
+        print(res)
+
+    return jsonify(res)
+
 @app.route('/ru/tools/')
 def tools():
     services = [
@@ -69,8 +88,8 @@ def tools():
     {
         'title': 'Лемматизация',
         'description': 'С помощью инструмента можно быстро лемматизировать текст (приводит к именительному падежу единственному числу) и проверять на N-граммы в тексте.',
-        'url': '#',
-        'anchor': 'Скоро'
+        'url': '/ru/lemma/',
+        'anchor': 'Подробнее'
     },
     {
         'title': 'Парсинг подсветок',

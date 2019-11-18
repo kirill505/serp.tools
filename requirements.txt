@@ -14,3 +14,4 @@ datetime
 bs4
 redis
 rq
+pymorphy2
