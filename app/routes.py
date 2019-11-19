@@ -23,6 +23,7 @@ from .backlights import ya_search_xmlriver
 from lxml import html
 from .xmlriver import *
 from .lemma import get_lemma_dict
+from .ngrams import get_ngrams_dict
 
 @app.route('/ru', methods=['GET', 'POST'])
 #@app.route('/index', methods=['GET', 'POST'])
@@ -74,7 +75,11 @@ def lemma_res():
         res = get_lemma_dict(text)
         print(res)
 
-    return jsonify(res)
+        res2 = get_ngrams_dict(text, 2)
+        print(res2)
+
+    #return jsonify(data={'lemma': res, 'ngrams': res2})
+    return jsonify(res, res2)
 
 @app.route('/ru/tools/')
 def tools():
