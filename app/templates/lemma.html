@@ -22,9 +22,9 @@
       <div class="form-group clearfix">
         <p class="zagolovok-tools">Ваш текст:</p>
         <div style="padding-left:0px;">
-          <textarea name="text_for_lemma" required class="form-control" placeholder="Ваш текст" rows="20"
-            wrap="soft"></textarea>
+          <textarea name="text_for_lemma" onChange = "lenDO();" onKeyUp = "lenDO();" required="" class="form-control" placeholder="Ваш текст" rows="20" wrap="soft"></textarea>
         </div>
+        <span id="textlength"><span class="label label-success">Всего <b>0</b> символов.</span> <span class="label label-info"> Без пробелов 0 символов.</span></span>
       </div>
     </div>
     <div class="col-sm-6">
@@ -145,5 +145,21 @@ $(document).ready(function() {
 
   });
 </script>
+<script type="text/javascript">
+  lenDO();
+  function lenDO(){
+    var str = $('textarea[name="text_for_lemma"]').val()
 
+    var len_y = str.length;
+    
+    var regexp=/[ \n\r]+/g;
+    var str2=str.replace(regexp,"");
+    
+    var len_n = (str2.length);
+  
+    var txtlen = "<span class='label label-success'>Количество символов: <b>" + len_y + "<\/b>.</span> <span class='label label-info'> Без пробелов: <b>" + len_n + "<\/b>.</span>";
+  
+    document.getElementById('textlength').innerHTML = txtlen;
+    }
+  </script>
 {% endblock %}
