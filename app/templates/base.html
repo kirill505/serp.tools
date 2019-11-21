@@ -4,18 +4,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
   <link rel="stylesheet" type="text/css"
     href="{{ url_for('static', filename='bootstrap-4.3.1-dist/css/bootstrap.min.css') }}">
   <script src="{{ url_for('static', filename='bootstrap-4.3.1-dist/js/bootstrap.js') }}"></script>
-  
+
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dashboard.css') }}">
-  
+
   <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
   <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
-  
+
 
   <!--
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -41,9 +41,36 @@
 </head>
 
 <body>
-  <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+  <div class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow navbar-expand-lg">
     <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="{{ url_for('index') }}">SERP.TOOLS</a>
-  </nav>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('top10') }}">Парсинг ТОП-10</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('lemma') }}">Лемматизация</a>
+        </li>
+      </ul>
+      <ul class="navbar-right navbar-nav">
+        {% if current_user.is_anonymous %}
+        <li class="nav-item"><a href="{{ url_for('login') }}" class="nav-link">Вход</a></li>
+        <li class="nav-item"><a href="{{ url_for('register') }}" class="nav-link">Регистрация</a></li>
+        {% else %}
+        <li class="nav-item"><a href="{{ url_for('user', username=current_user.username) }}"
+            class="nav-link">Профиль</a>
+        </li>
+        <li class="nav-item"><a href="{{ url_for('logout') }}" class="nav-link">Выход</a></li>
+        {% endif%}
+
+      </ul>
+    </div>
+  </div>
 
   <div class="container-fluid">
     <div class="row">
