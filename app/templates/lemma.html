@@ -23,7 +23,7 @@
         <div style="padding-left:0px;">
           <textarea name="text_for_lemma" onChange = "lenDO();" onKeyUp = "lenDO();" required="" class="form-control" placeholder="Ваш текст" rows="10" wrap="soft"></textarea>
         </div>
-        <span id="textlength"><span class="label label-success">Всего <b>0</b> символов.</span> <span class="label label-info"> Без пробелов 0 символов.</span></span>
+        <span id="textlength"><span class="label label-success">Всего <b>0</b> символов.</span> <span class="label label-info"> Без пробелов 0 символов.</span><span class="label label-info"> Количество слов <b>0</b>.</span></span>
       </div>
     </div>
   </div>
@@ -155,8 +155,13 @@ $(document).ready(function() {
     var str2=str.replace(regexp,"");
     
     var len_n = (str2.length);
+
+    s = str.replace(/(^\s*)|(\s*$)/gi,"");//exclude  start and end white-space
+    s = s.replace(/[ ]{2,}/gi," ");//2 or more space to 1
+    s = s.replace(/\n /,"\n"); // exclude newline with a start spacing
+    count_words = s.split(' ').length; 
   
-    var txtlen = "<span class='label label-success'>Количество символов: <b>" + len_y + "<\/b>.</span> <span class='label label-info'> Без пробелов: <b>" + len_n + "<\/b>.</span>";
+    var txtlen = "<span class='label label-success'>Количество символов: <b>" + len_y + "<\/b>.</span> <span class='label label-info'> Без пробелов: <b>" + len_n + "<\/b>.</span> <span class='label label-info'> Количество слов: <b>" + count_words + "<\/b>.</span>";
   
     document.getElementById('textlength').innerHTML = txtlen;
     }
