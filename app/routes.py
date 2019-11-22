@@ -73,13 +73,13 @@ def lemma_res():
         text = post_data['text_for_lemma']
 
         res = get_lemma_dict(text)
-        print(res)
+        #print(res)
 
         res2 = get_ngrams_dict(text, 2)
-        print(res2)
+        #print(res2)
 
     #return jsonify(data={'lemma': res, 'ngrams': res2})
-    return jsonify(res, res2)
+    return jsonify(res[0], res2, res[1], res[2])
 
 @app.route('/ru/tools/')
 def tools():

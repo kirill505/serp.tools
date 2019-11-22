@@ -18,25 +18,13 @@
     <input type="hidden" name="_token" value="LEFF5lYnP0Uh0P6KsqA093HEtB2mzQGvmypqhFpU">
     <input type="hidden" name="yes" value="1">
 
-    <div class="col-sm-6">
+    <div class="col-sm-12">
       <div class="form-group clearfix">
-        <p class="zagolovok-tools">Ваш текст:</p>
         <div style="padding-left:0px;">
-          <textarea name="text_for_lemma" onChange = "lenDO();" onKeyUp = "lenDO();" required="" class="form-control" placeholder="Ваш текст" rows="20" wrap="soft"></textarea>
+          <textarea name="text_for_lemma" onChange = "lenDO();" onKeyUp = "lenDO();" required="" class="form-control" placeholder="Ваш текст" rows="10" wrap="soft"></textarea>
         </div>
         <span id="textlength"><span class="label label-success">Всего <b>0</b> символов.</span> <span class="label label-info"> Без пробелов 0 символов.</span></span>
       </div>
-    </div>
-    <div class="col-sm-6">
-      <div class="form-group clearfix">
-        <p class="zagolovok-tools">Выберите опции:</p>
-        <div style="padding-left:0px;">
-          <select class="form-control input-sm js-example-basic-single" name="ss" id="ss">
-            <option value="1">Опция1</option>
-          </select>
-        </div>
-      </div>
-
     </div>
   </div>
   <br />
@@ -94,9 +82,9 @@ $(document).ready(function() {
 
         //print lemmas
         res = document.getElementsByClassName("lemma-res");
-        var table = $('<table/ id="datatable_slovoforms" class="table table-restable table-striped table-bordered table-sm">');
+        var table = $('<table/ id="datatable_slovoforms" class="table table-hover table-restable table-striped table-bordered table-sm table-responsive-sm">');
         $(res).append(table);
-        var thead = $('<thead/><tr/><th class="th-sm">#</th><th class="th-sm">Слово</th><th class="th-sm">Количество повторений</th>');
+        var thead = $('<thead/><tr/><th class="th-sm">#</th><th class="th-sm">Слово</th><th class="th-sm">Количество повторений</th><th class="th-sm">% в тексте</th><th class="th-sm">% в ядре</th><th class="th-sm">Входит в состав n-грамм</th>');
         $(table).append(thead);
 
         for (var i = 0; i < my_object[0].length; i++) {
@@ -105,13 +93,23 @@ $(document).ready(function() {
           row.append($('<td/ style="background-color:#FFFFFF;">').html(i + 1));
           row.append($('<td/ style="background-color:#FFFFFF;">').html(my_object[0][i][0]));
           row.append($('<td/ style="background-color:#FFFFFF;">').html(my_object[0][i][1]));
+          row.append($('<td/ style="background-color:#FFFFFF;">').html(Math.ceil(my_object[0][i][1]/my_object[2]*100 * 100) / 100 + '%')) ;
+          row.append($('<td/ style="background-color:#FFFFFF;">').html(Math.ceil(my_object[0][i][1]/my_object[3]*100 * 100) / 100 + '%'));
+          let ngram_entry = $('<td/ style="background-color:#FFFFFF;">');
+          for (var j = 0; j < my_object[1].length; j++) {
+            if (my_object[0][i][0] == my_object[1][j][0][0] || my_object[0][i][0] == my_object[1][j][0][1]) {
+              ngram_entry.append(my_object[1][j][0][0] + ' ' +my_object[1][j][0][1] + '<br> ');
+            };
+          };
+          row.append(ngram_entry);
+          
           $(table).append(row);
         };
         $(table).append(row);
 
         //print ngrams
         res = document.getElementsByClassName("n-grams-res");
-        var table = $('<table/ id="datatable_ngrams" class="table table-restable table-striped table-bordered table-sm">');
+        var table = $('<table/ id="datatable_ngrams" class="table table-hover table-restable table-striped table-bordered table-sm table-responsive-sm">');
         $(res).append(table);
         var thead = $('<thead/><tr/><th class="th-sm">#</th><th class="th-sm">Биграмма</th><th class="th-sm">Количество повторений</th>');
         $(table).append(thead);
@@ -121,7 +119,8 @@ $(document).ready(function() {
           val = '<a href=' + JSON.stringify(my_object[1][i]) + '>' + (my_object[1][i]) + '</a>' + '<br>';
           row.append($('<td/ style="background-color:#FFFFFF;">').html(i + 1));
           row.append($('<td/ style="background-color:#FFFFFF;">').html(my_object[1][i][0][0] + ' ' + my_object[1][i][0][1]));
-          row.append($('<td/ style="background-color:#FFFFFF;">').html(my_object[1][i][1])) ;
+          row.append($('<td/ style="background-color:#FFFFFF;">').html(my_object[1][i][1]));
+                  
           $(table).append(row);
         };
         $(table).append(row);

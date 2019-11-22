@@ -9,7 +9,7 @@
   <link rel="stylesheet" type="text/css"
     href="{{ url_for('static', filename='bootstrap-4.3.1-dist/css/bootstrap.min.css') }}">
   <script src="{{ url_for('static', filename='bootstrap-4.3.1-dist/js/bootstrap.js') }}"></script>
-
+  <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dashboard.css') }}">
 
   <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
@@ -48,7 +48,7 @@
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarNav">
+    <div class="collapse navbar-collapse d-none d-sm-block d-md-none" id="navbarNav">
       <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
         <li class="nav-item">
           <a class="nav-link" href="{{ url_for('top10') }}">Парсинг ТОП-10</a>
