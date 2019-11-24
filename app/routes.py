@@ -24,6 +24,7 @@ from lxml import html
 from .xmlriver import *
 from .lemma import get_lemma_dict
 from .ngrams import get_ngrams_dict
+from urllib.parse import urlparse
 
 @app.route('/ru', methods=['GET', 'POST'])
 #@app.route('/index', methods=['GET', 'POST'])
@@ -133,11 +134,35 @@ def top_10_res():
                 #task = long_task.apply_async()
             #res2[i] = get_urls_in_xmlriver(resp[1])
 
-        print(res2)
+        #print(res2)
         #в аргументе передаем id заказа
+        competitors = competitors_list(res2)
 
-    return jsonify(res2)
+    return jsonify(res2, competitors)
     #, {}, 202, {'Location': url_for('taskstatus', task_id=task.id)})
+
+def competitors_list(url_list):
+    
+    result = []
+    for key, urls in url_list.items():
+        for url in urls:
+            parsed_uri = urlparse(url)
+            result.append('{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri))
+        
+    unique_list = dict()
+    unique_count = 0
+    # traverse for all elements 
+    for x in result: 
+        # check if exists in unique_list or not 
+        if x not in unique_list: 
+            unique_list[x] = 1
+        else:
+            unique_list[x] += 1
+    
+    #print(sorted(unique_list.keys()))
+    print(sorted(unique_list.items(), key = lambda kv:kv[1], reverse=True))
+            
+    return sorted(unique_list.items(), key = lambda kv:kv[1], reverse=True)
 
 #тут надо добавить ф-ию получения id таски XMLRiver
 def top10_task_id():

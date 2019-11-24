@@ -173,7 +173,24 @@
       </button>
     </div>
     <br />
-    <div class="res" style="width:auto; clear: both; display:block"></div>
+    <div class="col-sm-12">
+      <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" id="top-tab" data-toggle="tab" href="#top" role="tab" aria-controls="top"
+            aria-selected="true">Топ</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="competitors-tab" data-toggle="tab" href="#competitors" role="tab"
+            aria-controls="competitors" aria-selected="false">Конкуренты</a>
+        </li>
+      </ul>
+
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active top-res" id="top" role="tabpanel" aria-labelledby="top"></div>
+        <div class="tab-pane fade competitors-res" id="competitors" role="tabpanel" aria-labelledby="competitors"></div>
+      </div>
+    </div>
+    
     <div id="progress"></div>
   </div>
 </div>
@@ -227,25 +244,42 @@
 
 
         //когда ответ от XMLRiver получен, тогда запускаем отрисовку результатов в табилце DOM
-        for (key in my_object) {
-          constructTable(key, my_object[key])
+        for (key in my_object[0]) {
+          constructTable(key, my_object[0][key])
         };
         $('.spinner-border').remove()
         function constructTable(tablename, spisok) {
-          res = document.getElementsByClassName("res");
-          var table = $('<table/ class="table" style="width:280px;float:left;">');
+          res = document.getElementsByClassName("top-res");
+          var table = $('<table/ id="data-lemma" class="table" style="width:280px;float:left;">');
           $(res).append(table);
           var thead = $('<thead/><tr/><th>#</th><th>' + tablename + '</th>');
           $(table).append(thead);
           for (var i = 0; i < spisok.length; i++) {
             row = $('<tr/>');
-            val = '<a href=' + JSON.stringify(spisok[i]) + '>' + (spisok[i]) + '</a>' + '<br>';
+            val = '<a href=' + JSON.stringify(spisok[i]) + 'target="_blank">' + (spisok[i]) + '</a>' + '<br>';
             if (val == null) val = "";
             row.append($('<td/ style="background-color:#FFFFFF;">').html(i + 1));
             row.append($('<td/ style="background-color:#FFFFFF;">').html(val));
             $(table).append(row);
           };
-        }
+        };
+
+        res = document.getElementsByClassName("competitors-res");
+        var table = $('<table/ id="data-competitors" class="table" style="width:280px;float:left;">');
+        $(res).append(table);
+        var thead = $('<thead/><tr/><th>#</th><th>Домен</th><th>Количество повторений</th>');
+        $(table).append(thead);
+
+        var count = 1;
+        for (var j = 0; j < my_object[1].length; j++) {
+          row = $('<tr/>');
+          row.append($('<td/ style="background-color:#FFFFFF;">').html(j+1));
+          row.append($('<td/ style="background-color:#FFFFFF;">').html('<a href="' + my_object[1][j][0] + '" target="_blank">' + my_object[1][j][0] + '</a>'));
+          row.append($('<td/ style="background-color:#FFFFFF;">').html(my_object[1][j][1]));
+          
+          $(table).append(row);
+          count = count + 1;
+        };
       },
       error: function (x, t, e) {
         alert('Что-то пошло не так!' + x);
