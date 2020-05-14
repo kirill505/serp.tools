@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+  <div class="row">
+    <br>
+    <div class="page-header" style="text-align:center;">
+      <h1>Лемматизация</h1>
+
+      <div class="form-group" style="text-align:center;">
+        <p>С помощью этого инструмента можно быстро лемматизировать текст (приводит к именительному падежу единственному
+          числу)</p>
+
+      </div>
+    </div>
+
+    <input type="hidden" name="_token" value="LEFF5lYnP0Uh0P6KsqA093HEtB2mzQGvmypqhFpU">
+    <input type="hidden" name="yes" value="1">
+
+    <div class="col-sm-12">
+      <div class="form-group clearfix">
+        <div style="padding-left:0px;">
+          <textarea name="text_for_lemma" onChange="lenDO();" onKeyUp="lenDO();" required="" class="form-control"
+            placeholder="Ваш текст" rows="10" wrap="soft"></textarea>
+        </div>
+        <span id="textlength"><span class="label label-success">Всего <b>0</b> символов.</span> <span
+            class="label label-info"> Без пробелов 0 символов.</span><span class="label label-info"> Количество слов
+            <b>0</b>.</span></span>
+      </div>
+    </div>
+  </div>
+  <br />
+  <div class="col-sm-12" style="text-align:center;">
+    <button type="submit" id="ok" class="btn btn-success">Лемматизировать....
+    </button>
+  </div>
+  <br />
+  <div class="row">
+    <div class="col-sm-9 res " style="width:auto; clear: both; display:block">
+      <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" id="lemma-tab" data-toggle="tab" href="#lemma" role="tab" aria-controls="lemma"
+            aria-selected="true">Леммы</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="n-grams-tab" data-toggle="tab" href="#n-grams" role="tab" aria-controls="n-grams"
+            aria-selected="false">N-граммы</a>
+        </li>
+      </ul>
+      <div class="tab-content" id="myTabContent">
+          <button class="btn btn-secondary btn-sm" id="expand_all">Показать все n-граммы</button>
+          <button class="btn btn-secondary btn-sm" id="collaps_all">Спрятать все n-граммы</button>
+          <button class="btn btn-secondary btn-sm">
+            Копировать выделенное в мой список
+          </button>
+        <div class="tab-pane fade show active lemma-res" id="lemma" role="tabpanel" aria-labelledby="lemma" style="overflow-y: scroll; height:550px;">
+         
+
+        </div>
+        <div class="tab-pane fade n-grams-res" id="n-grams" role="tabpanel" aria-labelledby="n-grams"></div>
+      </div>
+    </div>
+    <div class="col-sm-3" style="width:auto; clear: both; display:block;">
+      <div class="form-group clearfix">
+        <p>Мой список:</p>
+        <textarea class="lemmaCopy form-control" required="" wrap="soft" placeholder="Ваши леммы и N-граммы" rows="20"></textarea>
+      </div>
+    </div>
+
+    <div id="progress"></div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    $('#datatable_slovoforms').DataTable();
+  });
+</script>
+<script>
+  $('#ok').click(function () {
+    $('#container').html('<h3 align=center>Постановка задачи...</h3>')
+
+    spin = $('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+    $('#ok').append(spin);
+    $('.table-res').remove()
+
+    $.ajax({
+      url: "/ru/lemma/res",
+      type: "POST",
+      data: {
+        text_for_lemma: $('textarea[name="text_for_lemma"]').val(),
+      },
+      dataType: "html",
+      beforeSend: function () {
+      },
+      success: function (response) {
+        var my_object = $.parseJSON(response);
+        console.log(my_object)
+
+        //print lemmas
+        res = document.getElementsByClassName("lemma-res");
+        var table = $('<table/ id="datatable_slovoforms" class="table table-hover table-restable table-striped table-bordered table-sm table-responsive-sm">');
+        $(res).append(table);
+        var thead = $('<thead/><tr/><th class="th-sm">#</th><th class="th-sm">Слово</th><th class="th-sm">Количество повторений</th><th class="th-sm">% в тексте</th><th class="th-sm">% в ядре</th>');
+        $(table).append(thead);
+
+        for (var i = 0; i < my_object[0].length; i++) {
+          row = $('<tr/ class="expandable">');
+          val = '<a href=' + JSON.stringify(my_object[0][i]) + '>' + (my_object[0][i]) + '</a>' + '<br>';
+          row.append($('<td/ style="background-color:#FFFFFF;">').html('<input type="checkbox" name="type" value="' + my_object[0][i][0] + '" />'));
+          row.append($('<td/ style="background-color:#FFFFFF;">').html(my_object[0][i][0] + '<button type="button" class="btn btn-sm btn-secondary float-right ngrams-expandable">></button>'));
+          row.append($('<td/ style="background-color:#FFFFFF;">').html(my_object[0][i][1]));
+          row.append($('<td/ style="background-color:#FFFFFF;">').html(Math.ceil(my_object[0][i][1] / my_object[2] * 100 * 100) / 100 + '%'));
+          row.append($('<td/ style="background-color:#FFFFFF;">').html(Math.ceil(my_object[0][i][1] / my_object[3] * 100 * 100) / 100 + '%'));
+
+          $(table).append(row);
+
+          for (var j = 0; j < my_object[1].length; j++) {
+
+
+            if (my_object[0][i][0] == my_object[1][j][0][0] || my_object[0][i][0] == my_object[1][j][0][1]) {
+              row = $('<tr/ >');
+              row.append($('<td/ style="background-color:#FFFFFF;">').html('<input type="checkbox" name="type" value="' + my_object[1][j][0][0] + ' ' + my_object[1][j][0][1] + '" />'))
+              let ngram_entry = $('<td/ style="background-color:#FFFFFF;">');
+              ngram_entry.append($('<tr/ class="lemma_copy" style="background-color:#FFFFFF;">').html('<span style="padding-left: 20px;">' + my_object[1][j][0][0] + ' ' + my_object[1][j][0][1] + '<br> ' + '</span>'));
+
+              row.append(ngram_entry);
+              row.append($('<td/ style="background-color:#FFFFFF;">').html(my_object[1][j][1]));
+              row.append($('<td/ style="background-color:#FFFFFF;">'))
+              row.append($('<td/ style="background-color:#FFFFFF;">'))
+
+              $(table).append(row);
+            };
+
+          };
+
+
+
+        };
+        $(table).append(row);
+
+        //print ngrams
+        res = document.getElementsByClassName("n-grams-res");
+        var table = $('<table/ id="datatable_ngrams" class="table table-hover table-restable table-striped table-bordered table-sm table-responsive-sm">');
+        $(res).append(table);
+        var thead = $('<thead/><tr/><th class="th-sm">#</th><th class="th-sm">Биграмма</th><th class="th-sm">Количество повторений</th>');
+        $(table).append(thead);
+
+        for (var i = 0; i < my_object[1].length; i++) {
+          row = $('<tr/>');
+          val = '<a href=' + JSON.stringify(my_object[1][i]) + '>' + (my_object[1][i]) + '</a>' + '<br>';
+          row.append($('<td/ style="background-color:#FFFFFF;">').html(i + 1));
+          row.append($('<td/ style="background-color:#FFFFFF;">').html(my_object[1][i][0][0] + ' ' + my_object[1][i][0][1]));
+          row.append($('<td/ style="background-color:#FFFFFF;">').html(my_object[1][i][1]));
+
+          $(table).append(row);
+        };
+        $(table).append(row);
+
+        lemmExpandable();
+
+        $('.spinner-border').remove()
+
+      },
+      error: function (x, t, e) {
+        alert('Что-то пошло не так!' + x);
+        console.log(error);
+        $('.spinner-border').remove()
+        if (t === 'timeout') {
+
+        } else {
+          alert('Ошибка: ' + e + t + x);
+        }
+      },
+      timeout: 600000
+    });
+
+  });
+</script>
+<script type="text/javascript">
+  lemmExpandable();
+  function lemmExpandable() {
+    $('.expandable').nextAll('tr').each(function () { // hide all at start
+      if (!($(this).is('.expandable')))
+        $(this).hide();
+    });
+    $('.expandable .ngrams-expandable').click(function () { // toggle single by click
+      var trElem = $(this).closest("tr");
+      trElem.nextAll('tr').each(function () {
+        if ($(this).is('.expandable')) {
+          return false;
+        }
+        $(this).toggle();
+      });
+    });
+    $('#expand_all').click(function () { // show all
+      $('.expandable').nextAll('tr').each(function () {
+        if (!($(this).is('.expandable')))
+          $(this).show();
+      });
+    });
+    $('#collaps_all').click(function () { // hide all
+      $('.expandable').nextAll('tr').each(function () {
+        if (!($(this).is('.expandable')))
+          $(this).hide();
+      });
+    })
+  };
+</script>
+<script type="text/javascript">
+  lenDO();
+  function lenDO() {
+    var str = $('textarea[name="text_for_lemma"]').val()
+
+    var len_y = str.length;
+
+    var regexp = /[ \n\r]+/g;
+    var str2 = str.replace(regexp, "");
+
+    var len_n = (str2.length);
+
+    s = str.replace(/(^\s*)|(\s*$)/gi, "");//exclude  start and end white-space
+    s = s.replace(/[ ]{2,}/gi, " ");//2 or more space to 1
+    s = s.replace(/\n /, "\n"); // exclude newline with a start spacing
+    count_words = s.split(' ').length;
+
+    var txtlen = "<span class='label label-success'>Количество символов: <b>" + len_y + "<\/b>.</span> <span class='label label-info'> Без пробелов: <b>" + len_n + "<\/b>.</span> <span class='label label-info'> Количество слов: <b>" + count_words + "<\/b>.</span>";
+
+    document.getElementById('textlength').innerHTML = txtlen;
+  }
+</script>
+
+<script>
+  $('button').on('click', function () {
+    var array = [];
+    $("input:checked").each(function () {
+      array.push($(this).val());
+    });
+    for (var i = 0; i < array.length; i++) {
+      $('.lemmaCopy').append(array[i] + '\n');
+    }
+
+  }); 
+</script>
+{% endblock %}

@@ -1,159 +1,290 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="main-container">
-  <div class="container-fluid">
-    <div class="row-fluid">
-      <div class="col-md-12">
-        <br>
-        <div class="main_table">
-          <ol style="margin-top:20px;" class="breadcrumb">
-            <li><a href="/">Главная</a></li>
-            <li><a href="/tools/">Инструменты</a></li>
-            <li class="active"></li>
-          </ol>
-          <div class="page-header" style="text-align:center;">
-            <h1>Выгрузка ТОП-10 сайтов по запросу в Яндекс и Google</h1>
 
-            <div class="form-group">
-              <p>С помощью этого инструмента можно быстро выгрузить топ-10 сайтов по заданным запросам, посмотреть
-                визуально пересечения документов и доменов по запросам. Инструмент работает с поисковыми системами
-                Яндекс и Google.</p>
-              <p>
-                <div class="alert alert-info" role="alert">
-                  <noindex>
-                    <p>ALARM! Бесплатное увеличение лимитов за счет делегирования XML лимитов - <a
-                        href="/tools/blog/delegirovanie-xml-limitov/" target="_blank">подробности в БЛОГЕ</a>.</p>
-                  </noindex>
-                </div>
-              </p>
-            </div>
-          </div>
+<div class="container">
+  <div class="row">
+    <br>
+    <div class="page-header" style="text-align:center;">
+      <h1>Анализ ТОП10 Google</h1>
 
-          <input type="hidden" name="_token" value="LEFF5lYnP0Uh0P6KsqA093HEtB2mzQGvmypqhFpU">
-          <input type="hidden" name="yes" value="1">
-          <div class="fields filter_center clearfix" style="margin: 0 auto;">
-            <div class="form-group clearfix">
-              <p class="zagolovok-tools">Ключевые слова (максимум 50 ключевых фраз):</p>
-              <div class="col-sm-12" style="padding-left:0px;">
-                {{ form.keys(class="form-control", placeholder="Каждая ключевая фраза с новой строки.", rows="8", wrap="soft") }}
-              </div>
-            </div>
-            <div class="form-group clearfix">
-              <p class="zagolovok-tools">Выберите поисковую систему:</p>
-              <div class="col-sm-12" style="padding-left:0px;">
-                <select class="form-control input-sm js-example-basic-single" name="ss" id="ss">
-                  <option value="1">Google</option>
-                </select>
-                <br /><b>Проверка и выгрузка в Google возможна на подписке <a href="/tools/tariffs/all/"
-                    target="_blank">«Basic»</a> и выше.</b>
-              </div>
-            </div>
-            <div class="form-group clearfix" id="select-yandex-wrapper">
-              <p class="zagolovok-tools">Регион Google:</p>
-              <div class="col-sm-12" style="padding-left:0px;">
-                <select id="select-yandex" class="input-sm js-states" name="city">
-                  <option style="padding: 3px;" value="213">Москва</option>
-                  <option style="padding: 3px;" value="2">Санкт-Петербург</option>
-                  <option style="padding: 3px;" value="1000008">Denver</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group clearfix" id="select-google-wrapper" style="display: none">
-              <p class="zagolovok-tools">Регион Google:</p>
-              <div class="col-sm-12" style="padding-left:0px;">
-                <select id="select-google" class="input-sm js-states" name="city-google" >
-                  <option style="padding: 3px;" value="1011969">Москва,Москва,Россия</option>
-                  <option style="padding: 3px;" value="1012040">Санкт-Петербург,Санкт-Петербург,Россия</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group clearfix">
-              <p class="zagolovok-tools">Глубина проверки:</p>
-              <label class="btn btn-default btn-xs" style="padding-left:10px;">
-                <input type="radio" name="depth" id="optionsRadios1" value="10" checked>
-                Топ-10
-              </label>
-              <label class="btn btn-default btn-xs">
-                <input type="radio" name="depth" id="optionsRadios1" value="20">
-                Топ-20
-              </label>
-              <label class="btn btn-default btn-xs">
-                <input type="radio" name="depth" id="optionsRadios1" value="30">
-                Топ-30
-              </label>
-              <label class="btn btn-default btn-xs">
-                <input type="radio" name="depth" id="optionsRadios1" value="50">
-                Топ-50
-              </label>
-              <label class="btn btn-default btn-xs">
-                <input type="radio" name="depth" id="optionsRadios1" value="100">
-                Топ-100
-              </label>
-            </div>
-            <br />
-            <div class="text-center">
-              {{ form.hidden_tag() }}
-              {{ form.ok(class="btn btn-success")}}
-            </div>
-            <div class="res" style="width:auto; clear: both; display:block"></div>
+      <div class="form-group">
+        <p>Инструмент позволяет получить быстро получить данные выдачи поисковой системы Google</p>
+        <p>
+          <div class="alert alert-info" role="alert">
+            <noindex>
+              <p>Максимум 10 фраз в день для незарегистрированных пользователей, 50 в день - для зарегистрированных,
+                независимо от глобальных лимитов.</p>
+            </noindex>
           </div>
-          </form>
+        </p>
+      </div>
+    </div>
+
+    <input type="hidden" name="_token" value="LEFF5lYnP0Uh0P6KsqA093HEtB2mzQGvmypqhFpU">
+    <input type="hidden" name="yes" value="1">
+
+    <div class="col-sm-6">
+      <div class="form-group clearfix">
+        <p class="zagolovok-tools">Ключевые слова:</p>
+        <div style="padding-left:0px;">
+          <textarea name="keys" required class="form-control" placeholder="Каждая ключевая фраза с новой строки."
+            rows="20" wrap="soft"></textarea>
         </div>
       </div>
     </div>
+    <div class="col-sm-6">
+      <div class="form-group clearfix">
+        <p class="zagolovok-tools">Выберите поисковую систему:</p>
+        <div style="padding-left:0px;">
+          <select class="form-control input-sm js-example-basic-single" name="ss" id="ss">
+            <option value="1">Google</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group clearfix">
+        <p class="zagolovok-tools">Местоположение:</p>
+        <div style="padding-left:0px;">
+          <select id="select-loc" class="form-control input-sm js-example-basic-single" name="loc">
+            <option style="padding: 3px;" value="1011969">Москва</option>
+            <option style="padding: 3px;" value="1012040">Санкт-Петербург</option>
+            <option style="padding: 3px;" value="1001493">Минск</option>
+            <option style="padding: 3px;" value="1023191">Нью-Йорк</option>
+            <option style="padding: 3px;" value="1012852">Киев</option>
+            <option style="padding: 3px;" value="1012052">Екатеринбург</option>
+            <option style="padding: 3px;" value="1012054">Казань</option>
+            <option style="padding: 3px;" value="1011981">Нижний Новгород</option>
+            <option style="padding: 3px;" value="1011984">Новосибирск</option>
+            <option style="padding: 3px;" value="1011985">Омск</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group clearfix">
+        <p class="zagolovok-tools">Глубина проверки:</p>
+        <label class="btn btn-default btn-xs" style="padding-left:10px;">
+          <input type="radio" name="groupby" id="optionsRadios1" value="10" checked>
+          Топ-10
+        </label>
+        <label class="btn btn-default btn-xs">
+          <input type="radio" name="groupby" id="optionsRadios1" value="20">
+          Топ-20
+        </label>
+        <label class="btn btn-default btn-xs">
+          <input type="radio" name="groupby" id="optionsRadios1" value="30">
+          Топ-30
+        </label>
+        <label class="btn btn-default btn-xs">
+          <input type="radio" name="groupby" id="optionsRadios1" value="50">
+          Топ-50
+        </label>
+        <label class="btn btn-default btn-xs">
+          <input type="radio" name="groupby" id="optionsRadios1" value="100">
+          Топ-100
+        </label>
+      </div>
+
+      <div class="form-group clearfix" id="select-google-wrapper">
+        <p class="zagolovok-tools">Язык:</p>
+        <div style="padding-left:0px;">
+          <select id="select-lr" class="form-control input-sm js-example-basic-single" name="lr">
+            <option style="padding: 3px;" value="af">Afrikaans</option>
+            <option style="padding: 3px;" value="ar">Arabic</option>
+            <option style="padding: 3px;" value="hy">Armenian</option>
+            <option style="padding: 3px;" value="be">Belarusian</option>
+            <option style="padding: 3px;" value="bg">Bulgarian</option>
+            <option style="padding: 3px;" value="ca">Catalan</option>
+            <option style="padding: 3px;" value="hr">Croatian</option>
+            <option style="padding: 3px;" value="cs">Czech</option>
+            <option style="padding: 3px;" value="da">Danish</option>
+            <option style="padding: 3px;" value="nl">Dutch</option>
+            <option style="padding: 3px;" value="en">English</option>
+            <option style="padding: 3px;" value="eo">Esperanto</option>
+            <option style="padding: 3px;" value="et">Estonian</option>
+            <option style="padding: 3px;" value="tl">Filipino</option>
+            <option style="padding: 3px;" value="fi">Finnish</option>
+            <option style="padding: 3px;" value="fr">French</option>
+            <option style="padding: 3px;" value="de">German</option>
+            <option style="padding: 3px;" value="el">Greek</option>
+            <option style="padding: 3px;" value="iw">Hebrew</option>
+            <option style="padding: 3px;" value="hi">Hindi</option>
+            <option style="padding: 3px;" value="hu">Hungarian</option>
+            <option style="padding: 3px;" value="is">Icelandic</option>
+            <option style="padding: 3px;" value="id">Indonesian</option>
+            <option style="padding: 3px;" value="it">Italian</option>
+            <option style="padding: 3px;" value="ja">Japanese</option>
+            <option style="padding: 3px;" value="ko">Korean</option>
+            <option style="padding: 3px;" value="lv">Latvian</option>
+            <option style="padding: 3px;" value="lt">Lithuanian</option>
+            <option style="padding: 3px;" value="no">Norwegian</option>
+            <option style="padding: 3px;" value="fa">Persian</option>
+            <option style="padding: 3px;" value="pl">Polish</option>
+            <option style="padding: 3px;" value="pt">Portuguese</option>
+            <option style="padding: 3px;" value="ro">Romanian</option>
+            <option style="padding: 3px;" value="ru" selected>Russian</option>
+            <option style="padding: 3px;" value="sr">Serbian</option>
+            <option style="padding: 3px;" value="sk">Slovak</option>
+            <option style="padding: 3px;" value="sl">Slovenian</option>
+            <option style="padding: 3px;" value="es">Spanish</option>
+            <option style="padding: 3px;" value="sw">Swahili</option>
+            <option style="padding: 3px;" value="sv">Swedish</option>
+            <option style="padding: 3px;" value="th">Thai</option>
+            <option style="padding: 3px;" value="tr">Turkish</option>
+            <option style="padding: 3px;" value="uk">Ukrainian</option>
+            <option style="padding: 3px;" value="vi">Vietnamese</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group clearfix" id="select-google-wrapper">
+        <p class="zagolovok-tools">Домен:</p>
+        <div style="padding-left:0px;">
+          <select id="select-domain" class="form-control input-sm js-example-basic-single" name="domain">
+            <option style="padding: 3px;" value="143">ru</option>
+            <option style="padding: 3px;" value="37">com</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group clearfix" id="select-google-wrapper">
+        <p class="zagolovok-tools">Страна:</p>
+        <div style="padding-left:0px;">
+          <select id="select-country" class="form-control input-sm js-example-basic-single" name="country">
+            <option style="padding: 3px;" value="2643">Russia</option>
+            <option style="padding: 3px;" value="2112">Belarus</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group clearfix" id="select-google-wrapper">
+        <p class="zagolovok-tools">Устройство:</p>
+        <div style="padding-left:0px;">
+          <select id="select-device" class="form-control input-sm js-example-basic-single" name="device">
+            <option style="padding: 3px;" value="desktop">desktop</option>
+            <option style="padding: 3px;" value="mobile">mobile</option>
+            <option style="padding: 3px;" value="tablet">tablet</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <br />
+    <div class="col-sm-12" style="text-align:center;">
+      <button type="submit" id="ok" class="btn btn-success">Начать проверку....
+      </button>
+    </div>
+    <br />
+    <div class="col-sm-12">
+      <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" id="top-tab" data-toggle="tab" href="#top" role="tab" aria-controls="top"
+            aria-selected="true">Топ</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="competitors-tab" data-toggle="tab" href="#competitors" role="tab"
+            aria-controls="competitors" aria-selected="false">Конкуренты</a>
+        </li>
+      </ul>
+
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active top-res" id="top" role="tabpanel" aria-labelledby="top"></div>
+        <div class="tab-pane fade competitors-res" id="competitors" role="tabpanel" aria-labelledby="competitors"></div>
+      </div>
+    </div>
+    
+    <div id="progress"></div>
   </div>
 </div>
 
+<script src="//cdnjs.cloudflare.com/ajax/libs/nanobar/0.2.1/nanobar.min.js"></script>
 <script>
   $('#ok').click(function () {
     $('#container').html('<h3 align=center>Постановка задачи...</h3>')
+    // add spin to button
+    spin = $('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+    $('#ok').append(spin);
+    // add task status elements
+    //div = $('<div class="progress"><div></div><div>0%</div><div>...</div><div>&nbsp;</div></div><hr>');
+    //$('#progress').append(div);
+    // create a progress bar
+
+    //  var nanobar = new Nanobar({
+    //    bg: '#44f',
+    //  target: div[0].childNodes[0]
+    //});
+
     $.ajax({
-      url: "/top10/res",
+      url: "/ru/top10/res",
       type: "POST",
       data: {
         keys: $('textarea[name="keys"]').val(),
-        city: $('select[name="city"]').val(),
-        citygoogle: $('select[name="city-google"]').val(),
-        depth: $("input[name='depth']:checked").val(),
-        ss: $('select[name="ss"]').val(),
+        loc: $('select[name="loc"]').val(),
+        groupby: $("input[name='groupby']:checked").val(),
+        lr: $('select[name="lr"]').val(),
+        domain: $('select[name="domain"]').val(),
+        country: $('select[name="country"]').val(),
+        device: $('select[name="device"]').val(),
       },
       dataType: "html",
       beforeSend: function () {
-
       },
       success: function (response) {
         var my_object = $.parseJSON(response);
         console.log(my_object)
-        let obj = JSON.parse(response);
 
-        for (key in obj) {
-          constructTable(key, obj[key])
-        }
+        var queries = my_object[0]
+        var data = my_object[1]
+        var status = my_object[2]
+        var request = my_object[3]
+        //console.log(queries)
+
+        //пока статус обработки запроса false крутим спинер, костяк есть в ф-ии update_progress ниже...
+        //status_url = request['Location'];        
+        //этот код заменить на спинер
+        //update_progress(status_url, nanobar, div[0]);
+
+
+        //когда ответ от XMLRiver получен, тогда запускаем отрисовку результатов в табилце DOM
+        for (key in my_object[0]) {
+          constructTable(key, my_object[0][key])
+        };
+        $('.spinner-border').remove()
         function constructTable(tablename, spisok) {
-
-          res = document.getElementsByClassName("res");
-
-          var table = $('<table/ class="table" style="width:280px;float:left;">');
+          res = document.getElementsByClassName("top-res");
+          var table = $('<table/ id="data-lemma" class="table" style="width:280px;float:left;">');
           $(res).append(table);
           var thead = $('<thead/><tr/><th>#</th><th>' + tablename + '</th>');
           $(table).append(thead);
-
           for (var i = 0; i < spisok.length; i++) {
             row = $('<tr/>');
-            val = '<a href=' + JSON.stringify(spisok[i]) + '>' + (spisok[i]) + '</a>' + '<br>';
-
+            val = '<a href=' + JSON.stringify(spisok[i]) + 'target="_blank">' + (spisok[i]) + '</a>' + '<br>';
             if (val == null) val = "";
             row.append($('<td/ style="background-color:#FFFFFF;">').html(i + 1));
             row.append($('<td/ style="background-color:#FFFFFF;">').html(val));
-
             $(table).append(row);
-          }
-        }
+          };
+        };
+
+        res = document.getElementsByClassName("competitors-res");
+        var table = $('<table/ id="data-competitors" class="table" style="width:280px;float:left;">');
+        $(res).append(table);
+        var thead = $('<thead/><tr/><th>#</th><th>Домен</th><th>Количество повторений</th>');
+        $(table).append(thead);
+
+        var count = 1;
+        for (var j = 0; j < my_object[1].length; j++) {
+          row = $('<tr/>');
+          row.append($('<td/ style="background-color:#FFFFFF;">').html(j+1));
+          row.append($('<td/ style="background-color:#FFFFFF;">').html('<a href="' + my_object[1][j][0] + '" target="_blank">' + my_object[1][j][0] + '</a>'));
+          row.append($('<td/ style="background-color:#FFFFFF;">').html(my_object[1][j][1]));
+          
+          $(table).append(row);
+          count = count + 1;
+        };
       },
       error: function (x, t, e) {
         alert('Что-то пошло не так!' + x);
         console.log(error);
+        $('.spinner-border').remove()
         if (t === 'timeout') {
 
         } else {
@@ -165,4 +296,34 @@
 
   });
 </script>
+<script>
+  function update_progress(status_url, nanobar, status_div) {
+    // send GET request to status URL
+    $.getJSON(status_url, function (data) {
+
+      //удалить лишнее, функцию переделать под "Проверку ответа"
+      percent = parseInt(data['current'] * 100 / data['total']);
+      nanobar.go(percent);
+      $(status_div.childNodes[1]).text(percent + '%');
+      $(status_div.childNodes[2]).text(data['status']);
+      if (data['state'] != 'PENDING' && data['state'] != 'PROGRESS') {
+        if ('result' in data) {
+          // show result
+          $(status_div.childNodes[3]).text('Result: ' + data['result']);
+        }
+        else {
+          // something unexpected happened
+          $(status_div.childNodes[3]).text('Result: ' + data['state']);
+        }
+      }
+      else {
+        // rerun in 2 seconds
+        setTimeout(function () {
+          update_progress(status_url, nanobar, status_div);
+        }, 2000);
+      }
+    });
+  }
+</script>
+
 {% endblock %}

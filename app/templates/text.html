@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="/js/jquery.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('.expandable').nextAll('tr').each(function() { // hide all at start
+      if (!($(this).is('.expandable')))
+        $(this).hide();
+    });
+    $('.expandable input[type=button]').click(function() { // toggle single by click
+      var trElem = $(this).closest("tr");
+      trElem.nextAll('tr').each(function() {
+        if ($(this).is('.expandable')) {
+          return false;
+        }
+        $(this).toggle();
+      });
+    });
+    $('#expand_all').click(function() { // show all
+      $('.expandable').nextAll('tr').each(function() {
+        if (!($(this).is('.expandable')))
+          $(this).show();
+      });
+    });
+    $('#collaps_all').click(function() { // hide all
+      $('.expandable').nextAll('tr').each(function() {
+        if (!($(this).is('.expandable')))
+          $(this).hide();
+      });
+    })
+  });
+</script>
+<title>ConfigPage for CAN on RestbusSimulationStation</title>
+
+<body>
+  <h2>RSS</h2>
+  <button style="font-size:20px" id="expand_all">expand all</button>
+  <button style="font-size:20px" id="collaps_all">collaps all</button>
+  <table border="1">
+    <tr bgcolor="#fb9d00">
+      <th></th>
+      <th>FRAMES</th>
+      <th>ID</th>
+      <th>DLC</th>
+      <th>BRS</th>
+      <th>CYCLE/s</th>
+      <th>SET</th>
+      <th>SIGNALS</th>
+      <th>POS</th>
+      <th>Bits</th>
+      <th>select:</th>
+      <th>comput method</th>
+      <th>enum</th>
+    </tr>
+
+    <tr class="expandable">
+      <td>
+        <input type="button" value="+">
+      </td>
+      <td><strong>EOCM_CAN8_MSG01</strong>
+      </td>
+      <td>37</td>
+      <td>16</td>
+      <td>
+        <input type="checkbox" name="brs">
+      </td>
+      <td>0.01</td>
+      <td>
+        <input type="checkbox" name="frame" checked>
+      </td>
+      <tr>
+        <td>
+          <td>
+            <td>
+              <td>
+                <td>
+                  <td>
+                    <td><span title="Host Vehicle Path Curvature
+">IHstVhPthCrvt</span>
+                    </td>
+                    <td>2</td>
+                    <td>15</td>
+                    <td>
+                      <input type="number" name="value" required="required" value="0" min="0" max="32767">
+                      <td></td>
+                      <td>
+                        <input type="number" name="enum" min="0" style="width: 3em;">
+                      </td>
+                    </td>
+                  </td>
+                </td>
+              </td>
+            </td>
+          </td>
+        </td>
+      </tr>
+
+      <tr class="expandable">
+        <td>
+          <input type="button" value="+">
+        </td>
+        <td><strong>EOCM_CAN8_MSG01</strong>
+        </td>
+        <td>37</td>
+        <td>16</td>
+        <td>
+          <input type="checkbox" name="brs">
+        </td>
+        <td>0.01</td>
+        <td>
+          <input type="checkbox" name="frame" checked>
+        </td>
+        <tr>
+          <td>
+            <td>
+              <td>
+                <td>
+                  <td>
+                    <td>
+                      <td><span title="Host Vehicle Path Curvature
+">IHstVhPthCrvt</span>
+                      </td>
+                      <td>2</td>
+                      <td>15</td>
+                      <td>
+                        <input type="number" name="value" required="required" value="0" min="0" max="32767">
+                        <td></td>
+                        <td>
+                          <input type="number" name="enum" min="0" style="width: 3em;">
+                        </td>
+                      </td>
+                    </td>
+                  </td>
+                </td>
+              </td>
+            </td>
+          </td>
+        </tr>
+  </table>
+</body>
+
+</html>
